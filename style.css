@@ -1,0 +1,19 @@
+
+
+ul li {
+
+    color: black;
+    border: 1px solid rgb(203, 203, 214);
+    border-radius: 5px;
+    background-color: rgba(240, 239, 238, 0.461);
+}
+
+ul li a{
+    display: block;
+    padding: 1rem 2rem ;
+    text-decoration: none;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 700;
+    color: black;
+}
