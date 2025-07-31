@@ -16,7 +16,7 @@
         <form action="" method="post">
             <div class="mb-3">
                 <label for="" class="form-label "><b>Article Title</b></label>
-                <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title"> 
+                <input type="text" name="article_title " id="" class="form-control" placeholder="Enter Article Title"> 
             </div>
 
             <div class="mb-3">
