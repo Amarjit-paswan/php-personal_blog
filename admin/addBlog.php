@@ -10,13 +10,13 @@
 <body>
     <div class="container">
         <div class="tittle my-3 py-3 border-bottom">
-            <h2>Add Personal Blog</h2>
+            <h2>Add Personal Blog </h2>
         </div>
 
         <form action="" method="post">
             <div class="mb-3">
                 <label for="" class="form-label"><b>Article Title</b></label>
-                <input type="text" name="" id="" class="form-control" placeholder="Enter Article Title"> 
+                <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title"> 
             </div>
 
             <div class="mb-3">
