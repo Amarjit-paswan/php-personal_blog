@@ -8,7 +8,7 @@
 
 </head>
 <body>
-    <div class="container ">
+    <div class="container">
         <div class="tittle my-3 py-3 border-bottom">
             <h2>Add Personal Blog</h2>
         </div>
