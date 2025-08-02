@@ -1,5 +1,41 @@
 <?php 
 
+// ================================
+// Load Enviroment Variables (.env)
+// ================================
+require_once dirname(__DIR__,2). '/vendor/autoload.php';
+use Dotenv\Dotenv;
+
+Dotenv::createImmutable(dirname(__DIR__,2))->load();
+
+// ===============================
+// Force HTTPS
+// ==============================
+
+
+
+if (strpos($_SERVER['HTTP_HOST'], 'localhost') === false) {
+    if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
+        $redirectUrl = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        header("Location: $redirectUrl");
+        exit();
+    }
+}
+
+
+
+
+// ===============================
+// Security Headers
+// ==============================
+header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload"); // HTTPS Only
+header("X-Frame-Options: DENY");                // Prevent Clickjacking
+header("X-Content-Type-Options: nosniff");      // Prevent MIME sniffing
+header("Referrer-Policy: no-referrer");         // No referrer leakage
+header("X-XSS-Protection: 1, mode=black");      // XSS protection for old browsers
+header("Permission-Policy: geolocation=(), microphone=()");   // Disable camera/mic etc.
+// header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"); // CSP
+
 // Load all title
 $titles = require dirname(__DIR__,1). '/common/tittle.php'; //adjust if needed
 

@@ -1,3 +1,13 @@
+<?php 
+
+// Include authentication file
+// require_once(dirname(__DIR__) .'/admin/conn/auth.php');
+
+// Load header file
+require_once('admin/common/header.php');
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
