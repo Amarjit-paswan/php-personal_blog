@@ -1,5 +1,20 @@
 <?php 
 
+// Start the session if not already started
+if(session_status() === PHP_SESSION_NONE){
+    session_start();
+}
+
+// Generate CSRF token if not already set
+if(!isset($_SESSION['csrf_token'])){
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Helper function to get token
+function csrf_token(){
+    return $_SESSION['csrf_token'];
+}
+
 // ================================
 // Load Enviroment Variables (.env)
 // ================================

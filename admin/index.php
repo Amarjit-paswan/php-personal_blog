@@ -13,7 +13,7 @@ require_once(dirname(__DIR__).'/admin/common/header.php');
         <div class="tittle my-3 py-4 border-bottom d-flex justify-content-between align-items-center">
             <h3>Personal Blog | Dashboard</h3>
 
-            <button class="btn btn-warning">Add Blog</button>
+            <a href="addBlog.php" class="btn btn-warning">Add Blog</a>
         </div>
 
         <div class="row">
