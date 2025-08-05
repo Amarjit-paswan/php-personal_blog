@@ -13,6 +13,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 }
 
+   //Create empty array to show error
+    $error = [];
+
+    //Create empty array to show value for each error
+    $values = [];
+
 
 //Check form is submitted
 if(isset($_POST['add_blog_btn'])){
@@ -33,48 +39,68 @@ if(isset($_POST['add_blog_btn'])){
     // Store input name
     $fields = ['article_title', 'publishing_title', 'content'];
 
-    //Create empty array to show error
-    $error = [];
-
-    //Create empty array to show value for each error
-    $values = [];
+ 
 
     foreach($fields as $field){
-        $values = trim($_POST[$field] ?? '');
-        $values[$field] = htmlspecialchars($values);
+        $input = trim($_POST[$field] ?? '');
+        $escaped = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 
-        if($values === ''){
-            $label = $fields_labels[$field] ?? ucfirst(str_replace('_',' ',$field));
+        $values[$field] = $escaped;
+
+        // Remove underscore and special character from name of input
+        $label = $fields_labels[$field] ?? ucfirst(str_replace('_',' ',$field));
+
+        if($input === ''){
             $error[$field] = "$label is required";
+        }else if($field === 'article_title' && strlen($input) < 4){
+            $error[$field] = "$label must be at least 4 characters";
         }
     }
 
-    // Prepare Blog Details
-    $newBlog = [
-        'article_title' => $article_title,
-        'publishing_title' => $publishing_title,
-        'content' => $content,
-        'publish_date' => date('d-m-Y')
-    ];
+    // Save data when error is empty
+    if(empty($error)){
 
-    // File path (Stored blogs details)
-    $filePath = dirname(__DIR__). '/data/blogs.json';
+        // Prepare Blog Details
+        $newBlog = [
+            'article_title' => $article_title,
+            'publishing_title' => $publishing_title,
+            'content' => $content,
+            'publish_date' => date('d-m-Y')
+        ];
 
-    // Read existing blog in file
-    $Blogs = [];
-    if(file_exists($filePath)){
-        $json_data = file_get_contents($filePath);
-        $Blogs = json_decode($json_data,true) ?? [];
+        // File path (Stored blogs details)
+        $filePath = dirname(__DIR__). '/data/blogs.json';
+
+        if(!file_exists($filePath)){
+            mkdir($filePath, 0755, true);
+        }
+
+        // Read existing blog in file
+        $Blogs = [];
+        if(file_exists($filePath)){
+            $json_data = file_get_contents($filePath);
+            $Blogs = json_decode($json_data,true) ?? [];
+        }
+
+        // Add new Blog to the list
+        $Blogs[] = $newBlog;
+
+        // Save back to file 
+        if(file_put_contents($filePath, json_encode($Blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))){
+            echo "Users saved successfully";
+        }else{
+            echo "Failed to save";
+        }
+
     }
 
-    // Add new Blog to the list
-    $Blogs[] = $newBlog;
-
-    // Save back to file 
-    file_put_contents($filePath, json_encode($Blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-    echo "Users saved successfully";
 }
+
+//Save old input value
+function old($field,$values){
+    return htmlspecialchars($values[$field] ?? '', ENT_QUOTES, 'UTF-8');
+}
+
 ?>
 
 
@@ -88,20 +114,20 @@ if(isset($_POST['add_blog_btn'])){
             <input type="text" name="csrf_token" id="" value="<?= csrf_token(); ?>">
             <div class="mb-3">
                 <label for="" class="form-label "><b>Article Title</b></label>
-                <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title"> 
+                <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title" value="<?= old('article_title', $values) ?>"> 
                 <small class="text-danger"><?= $error['article_title'] ?? '' ?></small>
             </div>
 
             <div class="mb-3">
                 <label for="" class="form-label"><b>Publishing Title</b></label>
-                <input type="text" name="publishing_title" id="" class="form-control" placeholder="Enter Publishing Title">
+                <input type="text" name="publishing_title" id="" class="form-control" placeholder="Enter Publishing Title" value="<?= old('publishing_title', $values) ?>">
                 <small class="text-danger"><?= $error['publishing_title'] ?? '' ?></small>
 
             </div>
 
             <div class="mb-3">
                 <label for="" class="form-label"><b>Content</b></label>
-                <textarea name="content" id="" class="form-control" placeholder="Enter Content" rows="10"></textarea>
+                <textarea name="content" id="" class="form-control" placeholder="Enter Content" rows="10"><?= old('content', $values) ?></textarea>
                 <small class="text-danger"><?= $error['content'] ?? '' ?></small>
 
             </div>
