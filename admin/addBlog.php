@@ -68,19 +68,19 @@ if(isset($_POST['add_blog_btn'])){
             'publish_date' => date('d-m-Y')
         ];
 
-        // File path (Stored blogs details)
-        $filePath = dirname(__DIR__). '/data/blogs.json';
+        $filePath = dirname(__DIR__) . '/data/blogs.json';
 
-        if(!file_exists($filePath)){
-            mkdir($filePath, 0755, true);
-        }
+            // Make sure the data folder exists, not the file
+            $dataDir = dirname($filePath);
+            if (!is_dir($dataDir)) {
+                mkdir($dataDir, 0755, true);
+            }
 
-        // Read existing blog in file
-        $Blogs = [];
-        if(file_exists($filePath)){
-            $json_data = file_get_contents($filePath);
-            $Blogs = json_decode($json_data,true) ?? [];
-        }
+            // If file doesn't exist, create an empty one
+            if (!file_exists($filePath)) {
+                file_put_contents($filePath, json_encode([])); // Create empty JSON array
+            }
+
 
         // Add new Blog to the list
         $Blogs[] = $newBlog;
