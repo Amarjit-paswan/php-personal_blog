@@ -77,7 +77,7 @@ if(isset($_POST['add_blog_btn'])){
             }
 
             // If file doesn't exist, create an empty one
-            if (!file_exists($filePath)) {
+            if (!file_exists($filePath) || is_dir($filePath)) {
                 file_put_contents($filePath, json_encode([])); // Create empty JSON array
             }
 
@@ -87,9 +87,11 @@ if(isset($_POST['add_blog_btn'])){
 
         // Save back to file 
         if(file_put_contents($filePath, json_encode($Blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))){
-            echo "Users saved successfully";
+            $_SESSION['success'] = "Users saved successfully";
+            header('Location: '. $_SERVER['PHP_SELF']);
+            exit();
         }else{
-            echo "Failed to save";
+            $error['error'] = "Failed to save";
         }
 
     }
@@ -110,8 +112,20 @@ function old($field,$values){
             <h2>Add Personal Blog </h2>
         </div>
 
+         <!-- Show Success message after data saved successfully -->
+        <?php if(isset($_SESSION['success'])):?>
+            <div class="alert alert-success"><?= $_SESSION['success'] ?></div>
+        <?php unset($_SESSION['success']) ; ?>
+        <?php endif; ?>
+
+        <!-- Show error message if data saved failed -->
+        <?php if(isset($_SESSION['error'])):?>
+            <div class="alert alert-danger"><?= $_SESSION['error'] ?></div>
+        <?php unset($_SESSION['error']) ; ?>
+        <?php endif; ?>
+
         <form action="addBlog.php" method="post">
-            <input type="text" name="csrf_token" id="" value="<?= csrf_token(); ?>">
+            <input type="hidden" name="csrf_token" id="" value="<?= csrf_token(); ?>">
             <div class="mb-3">
                 <label for="" class="form-label "><b>Article Title</b></label>
                 <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title" value="<?= old('article_title', $values) ?>"> 
