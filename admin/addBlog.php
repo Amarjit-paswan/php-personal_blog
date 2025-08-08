@@ -70,21 +70,16 @@ if(isset($_POST['add_blog_btn'])){
 
         $filePath = dirname(__DIR__) . '/data/blogs.json';
 
-            // Make sure the data folder exists, not the file
-            $dataDir = dirname($filePath);
-            if (!is_dir($dataDir)) {
-                mkdir($dataDir, 0755, true);
+            $Blogs = [];
+            $existingData = file_get_contents($filePath);
+            if(!empty($existingData)){
+                $Blogs = json_decode($existingData,true);
             }
 
-            // If file doesn't exist, create an empty one
-            if (!file_exists($filePath) || is_dir($filePath)) {
-                file_put_contents($filePath, json_encode([])); // Create empty JSON array
-            }
+            // Add new blog to list
+            $Blogs[] = $newBlog;
 
-
-        // Add new Blog to the list
-        $Blogs[] = $newBlog;
-
+     
         // Save back to file 
         if(file_put_contents($filePath, json_encode($Blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))){
             $_SESSION['success'] = "Users saved successfully";
