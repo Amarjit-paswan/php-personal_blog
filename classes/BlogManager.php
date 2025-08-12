@@ -23,17 +23,23 @@ class BlogManager{
         }
     }
 
-    // Get all Blogs 
-    public function getBlogs(){
+    public function getAll(): array{
         $data = file_get_contents($this->filePath);
         return json_decode($data,true) ?? [];
     }
 
-    // Add a new Blog entry
-    public function addBlog($blogs){
-        $blogs = $this->getBlogs();
-        $blogs[] = $blogs;
-        return file_put_contents($this->filePath, json_encode($blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) !== false;
+    public function save(Blog $blog):bool{
+        // Get all existing blogs
+        $blogs = $this->getAll();
+
+        //Add new Blog
+        $blogs[] = $blog->toArray();
+
+        //Save updated blog list
+        return file_put_contents(
+            $this->filePath,
+            json_encode($blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+        ) !== false;
     }
 }
 ?>

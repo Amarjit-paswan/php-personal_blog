@@ -1,103 +1,56 @@
 <?php 
 
-// Include authentication file
-require_once(dirname(__DIR__) .'/admin/conn/auth.php');
+// Session start
+if(session_status() != PHP_SESSION_ACTIVE){
+    session_start();
+}
 
-// Load header file
-require_once(dirname(__DIR__).'/admin/common/header.php');
+//Include required classes
+require_once __DIR__ .'/conn/auth.php';
+require_once __DIR__ .'/common/header.php';
+require_once dirname(__DIR__).'/classes/Blog.php';
+require_once dirname(__DIR__).'/classes/BlogManager.php';
+require_once dirname(__DIR__).'/classes/BlogValidator.php';
+require_once dirname(__DIR__).'/classes/Csrf.php';
 
-//Verfiy CSRF token
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
+//Create a instance of helper classes
+$blogManager = new BlogManager(dirname(__DIR__,2).'/data/blogs.json');
+$validator = new BlogValidator();
+
+$errors = [];
+$values = [];
+
+//Handle form submission
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
+    //Verify CSRF token
+    if(!Csrf::verifyToken($_POST['csrf_token']) ?? ''){
         die('Invalid CSRF token');
     }
-}
 
-   //Create empty array to show error
-    $error = [];
+    //If no validation errors, save blog
+    if(empty($errors)){
+        $blog = new Blog(
+            $values['article_title'],
+            $values['publishing_title'],
+            $values['content']
+        );
 
-    //Create empty array to show value for each error
-    $values = [];
-
-
-//Check form is submitted
-if(isset($_POST['add_blog_btn'])){
-
-    //Store form input
-    $article_title = htmlspecialchars(strip_tags(trim($_POST['article_title'])), ENT_QUOTES, 'UTF-8');
-    $publishing_title = htmlspecialchars(strip_tags(trim($_POST['publishing_title'])), ENT_QUOTES, 'UTF-8');
-    $content = htmlspecialchars(strip_tags(trim($_POST['content'])), ENT_QUOTES, 'UTF-8');
-
-
-    // Save input name as Proper words
-    $fields_labels = [
-        'article_title' => 'Article Title',
-        'publishing_title' => 'Publishing Title',
-        'content' => 'Content'
-    ];
-
-    // Store input name
-    $fields = ['article_title', 'publishing_title', 'content'];
-
- 
-
-    foreach($fields as $field){
-        $input = trim($_POST[$field] ?? '');
-        $escaped = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
-
-        $values[$field] = $escaped;
-
-        // Remove underscore and special character from name of input
-        $label = $fields_labels[$field] ?? ucfirst(str_replace('_',' ',$field));
-
-        if($input === ''){
-            $error[$field] = "$label is required";
-        }else if($field === 'article_title' && strlen($input) < 4){
-            $error[$field] = "$label must be at least 4 characters";
-        }
-    }
-
-    // Save data when error is empty
-    if(empty($error)){
-
-        // Prepare Blog Details
-        $newBlog = [
-            'article_title' => $article_title,
-            'publishing_title' => $publishing_title,
-            'content' => $content,
-            'publish_date' => date('d-m-Y')
-        ];
-
-        $filePath = dirname(__DIR__) . '/data/blogs.json';
-
-            $Blogs = [];
-            $existingData = file_get_contents($filePath);
-            if(!empty($existingData)){
-                $Blogs = json_decode($existingData,true);
-            }
-
-            // Add new blog to list
-            $Blogs[] = $newBlog;
-
-     
-        // Save back to file 
-        if(file_put_contents($filePath, json_encode($Blogs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))){
-            $_SESSION['success'] = "Users saved successfully";
-            header('Location: '. $_SERVER['PHP_SELF']);
-            exit();
+        //Save blog and redirect on success
+        if($blogManager->save($blog)){
+            $_SESSION['success'] = "Blog saved successfully";
+            header('Location: '.$_SERVER['PHP_SELF']);
+            exit;
         }else{
-            $error['error'] = "Failed to save";
+            $errors['error'] = "Falied to save blog";
         }
-
     }
 
 }
 
-//Save old input value
-function old($field,$values){
+// Save old 
+function old(string $field, array $values): string {
     return htmlspecialchars($values[$field] ?? '', ENT_QUOTES, 'UTF-8');
 }
-
 ?>
 
 
@@ -120,7 +73,7 @@ function old($field,$values){
         <?php endif; ?>
 
         <form action="addBlog.php" method="post">
-            <input type="hidden" name="csrf_token" id="" value="<?= csrf_token(); ?>">
+            <input type="hidden" name="csrf_token" id="" value="<?= Csrf::generateToken() ?>">
             <div class="mb-3">
                 <label for="" class="form-label "><b>Article Title</b></label>
                 <input type="text" name="article_title" id="" class="form-control" placeholder="Enter Article Title" value="<?= old('article_title', $values) ?>"> 
