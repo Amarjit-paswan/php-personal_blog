@@ -35,6 +35,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
             $values['content']
         );
 
+        [$errors,$values] = $validator->validate($_POST);
+
         //Save blog and redirect on success
         if($blogManager->save($blog)){
             $_SESSION['success'] = "Blog saved successfully";
