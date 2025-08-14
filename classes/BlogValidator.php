@@ -18,12 +18,12 @@ class BlogValidator{
 
         foreach($this->fieldsLabels as $field => $label){
             //Trim whitespace and removed unwanted tags
-            $input = trim($data[$field] ?? '');
+            $input = trim($data[$field] ?? Null);
             $escaped = htmlspecialchars(strip_tags($input), ENT_QUOTES, 'UTF-8');
             $values[$field] =  $escaped;
 
             //Validation rules
-            if($input == ''){
+            if($input == '' || $input == null){
                 $errors[$field] = "$label is required";
             }else if($field == 'article_title' && strlen($input) < 4){
                 $errors[$field] = "$label must be at least 4 characters";

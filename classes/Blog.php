@@ -10,7 +10,7 @@ class Blog{
 
     // Blog constructor
 
-    public function __construct(string $article_title, string $publishing_title, string $content)
+    public function __construct( $article_title,  $publishing_title,  $content)
     {
         $this->article_title = $article_title;
         $this->publishing_title = $publishing_title;

@@ -14,11 +14,15 @@ require_once dirname(__DIR__).'/classes/BlogValidator.php';
 require_once dirname(__DIR__).'/classes/Csrf.php';
 
 //Create a instance of helper classes
-$blogManager = new BlogManager(dirname(__DIR__,2).'/data/blogs.json');
+$blogManager = new BlogManager(dirname(__DIR__).'/data/blogs.json');
 $validator = new BlogValidator();
 
 $errors = [];
-$values = [];
+    $values = [
+      'article_title' => '',
+    'publishing_title' => '',
+    'content' => ''
+];
 
 //Handle form submission
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
@@ -26,16 +30,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
     if(!Csrf::verifyToken($_POST['csrf_token']) ?? ''){
         die('Invalid CSRF token');
     }
+        [$errors,$values] = $validator->validate($_POST);
+
 
     //If no validation errors, save blog
     if(empty($errors)){
         $blog = new Blog(
-            $values['article_title'],
+           $values['article_title'],
             $values['publishing_title'],
             $values['content']
         );
 
-        [$errors,$values] = $validator->validate($_POST);
 
         //Save blog and redirect on success
         if($blogManager->save($blog)){
