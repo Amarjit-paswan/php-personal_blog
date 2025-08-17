@@ -30,7 +30,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
     if(!Csrf::verifyToken($_POST['csrf_token']) ?? ''){
         die('Invalid CSRF token');
     }
-        [$errors,$values] = $validator->validate($_POST);
+    [$errors,$values] = $validator->validate($_POST);
+      
 
 
     //If no validation errors, save blog
@@ -49,7 +50,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_blog_btn'])){
             exit;
         }else{
             $errors['error'] = "Falied to save blog";
+           
         }
+    }else{
+
+            $error = $errors;
+         
+
     }
 
 }
