@@ -56,7 +56,7 @@ if(file_exists($file_path)){
                         <td><?= htmlspecialchars($blog['publish_date'], ENT_QUOTES, 'UTF-8') ?></td>
                         <td>
                             <div class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-primary">Edit</button>
+                                <a href="editBlog.php" class="btn btn-primary">Edit</a>
                                 <button class="btn btn-danger">Delete</button>
                             </div>
                         </td>
