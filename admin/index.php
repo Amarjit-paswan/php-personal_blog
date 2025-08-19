@@ -6,6 +6,9 @@ require_once(dirname(__DIR__) .'/admin/conn/auth.php');
 // Load header file
 require_once(dirname(__DIR__).'/admin/common/header.php');
 
+// Add Controller
+require_once(dirname(__DIR__).'/controller/blogController.php');
+
 //Assign file 
 $file_path = dirname(__DIR__).'/data/blogs.json';
 
@@ -56,7 +59,10 @@ if(file_exists($file_path)){
                         <td><?= htmlspecialchars($blog['publish_date'], ENT_QUOTES, 'UTF-8') ?></td>
                         <td>
                             <div class="d-flex justify-content-center gap-3">
-                                <a href="editBlog.php" class="btn btn-primary">Edit</a>
+                                <form action="editBlog.php?blog_id" method="post">
+                                    <input type="hidden" name="blog_id" value="<?= $blog['article_title'] ?>">
+                                    <input type="submit" value="Edit" class="btn btn-primary">
+                                </form>
                                 <button class="btn btn-danger">Delete</button>
                             </div>
                         </td>
