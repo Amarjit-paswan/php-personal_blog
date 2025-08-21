@@ -1,5 +1,6 @@
 <?php 
 
+
 // Include authentication file
 require_once(__DIR__ .'/admin/conn/auth.php');
 
